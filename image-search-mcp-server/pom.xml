@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.loveassistant</groupId>
-    <artifactId>yu-image-search-mcp-server</artifactId>
+    <artifactId>image-search-mcp-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>yu-image-search-mcp-server</name>
-    <description>yu-image-search-mcp-server</description>
+    <name>image-search-mcp-server</name>
+    <description>图片搜索 MCP 服务（基于 Spring AI MCP Server）</description>
     <url/>
     <licenses>
         <license/>

@@ -47,8 +47,8 @@
 │   ├── application.yml
 │   ├── mcp-servers.json   # MCP 服务（stdio）启动配置
 │   └── document/          # 知识库 Markdown
-├── yu-ai-agent-frontend/  # Vue 3 前端
-└── yu-image-search-mcp-server/  # 基于 MCP 协议的图片搜索服务（独立 Maven 工程）
+├── love-assistant-frontend/  # Vue 3 前端
+└── image-search-mcp-server/ # 基于 MCP 协议的图片搜索服务（独立 Maven 工程）
 ```
 
 ## 快速开始
@@ -85,14 +85,14 @@ mvn clean package -DskipTests
 java -jar target/love-assistant-0.0.1-SNAPSHOT.jar
 ```
 
-访问 `http://localhost:8123/api/swagger-ui.html` 查看接口文档，前端项目见 `yu-ai-agent-frontend/`。
+访问 `http://localhost:8123/api/swagger-ui.html` 查看接口文档，前端项目见 `love-assistant-frontend/`。
 
 ### 4. 使用 MCP 服务
 
 `src/main/resources/mcp-servers.json` 里配置了两个 stdio MCP 服务，其中图片搜索服务需要先打包：
 
 ```powershell
-cd yu-image-search-mcp-server
+cd image-search-mcp-server
 .\mvnw.cmd -DskipTests package
 ```
 
