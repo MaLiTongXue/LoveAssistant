@@ -105,6 +105,7 @@ cd image-search-mcp-server
 | `PDFGenerationToolTest` | PDF 真实落盘、非空、以 `%PDF` 文件头开头、非法文件名降级 |
 | `WebSearchToolTest` | 注入假 HTTP 响应，覆盖请求参数拼装、最多 5 条截断、结果不足 5 条、空结果、调用异常降级 |
 | `TerminalOperationToolTest` | 终端命令执行与非零退出码处理 |
+| `ReActLoopTest` | 智能体循环行为：回答不被丢弃、答完立即停止、多步不提前结束、旁白保留、无回答时兜底总结 |
 
 以下测试依赖真实环境（模型 API Key / 外网 / PostgreSQL），已从默认执行中排除，
 需要时把 `pom.xml` 里 surefire 的 `excludes` 对应项注释掉再跑：
