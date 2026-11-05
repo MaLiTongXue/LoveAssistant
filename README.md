@@ -75,7 +75,11 @@ $env:DASHSCOPE_API_KEY = "sk-xxxx"
 ```
 
 > 可选：`search-api.api-key`（网页搜索工具）、`AMAP_MAPS_API_KEY`（高德 MCP）、
-> `ImageSearchTool` 里的 Pexels Key —— 不配置的话对应工具会返回错误，但不影响主流程启动。
+> `PEXELS_API_KEY`（图片搜索 MCP）—— 不配置的话对应工具会返回错误提示，但不影响主流程启动。
+>
+> 仓库里的 `mcp-servers.json` 只保留占位符 `YOUR_AMAP_API_KEY`。本地要真实使用高德 MCP 时，
+> 复制一份 `mcp-servers.local.json` 填入自己的 key（该文件已被 `.gitignore` 忽略），
+> 并在 `application-local.yml` 里把 `servers-configuration` 指向它。
 
 ### 3. 启动
 

@@ -1,5 +1,7 @@
 ### CUSTOM ###
 application-local.yml
+# 本地真实密钥的 MCP 配置（仓库里只保留 mcp-servers.json 的占位符版本）
+mcp-servers.local.json
 tmp
 
 HELP.md
