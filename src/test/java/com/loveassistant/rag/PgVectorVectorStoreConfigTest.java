@@ -20,13 +20,13 @@ class PgVectorVectorStoreConfigTest {
     @Test
     void pgVectorVectorStore() {
         List<Document> documents = List.of(
-                new Document("恋爱助手的编程导航有什么用？学编程啊，做项目啊", Map.of("meta1", "meta1")),
-                new Document("恋爱助手的原创项目教程 example.com"),
+                new Document("恋爱助手的知识库能回答什么类型的问题？情感沟通相关的问题", Map.of("meta1", "meta1")),
+                new Document("恋爱助手知识库文档示例"),
                 new Document("恋爱助手这小伙子比较帅气", Map.of("meta2", "meta2")));
         // 添加文档
         pgVectorVectorStore.add(documents);
         // 相似度查询
-        List<Document> results = pgVectorVectorStore.similaritySearch(SearchRequest.builder().query("怎么学编程啊").topK(3).build());
+        List<Document> results = pgVectorVectorStore.similaritySearch(SearchRequest.builder().query("怎么和另一半沟通").topK(3).build());
         Assertions.assertNotNull(results);
     }
 }

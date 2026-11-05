@@ -11,8 +11,6 @@ import com.loveassistant.constant.FileConstant;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 
-import java.io.IOException;
-
 /**
  * PDF 生成工具
  */
@@ -45,7 +43,8 @@ public class PDFGenerationTool {
                 document.add(paragraph);
             }
             return "PDF generated successfully to: " + filePath;
-        } catch (IOException e) {
+        } catch (Exception e) {
+            // 工具方法不向上抛异常：非法路径、IO 失败等都降级成字符串，避免中断智能体循环
             return "Error generating PDF: " + e.getMessage();
         }
     }

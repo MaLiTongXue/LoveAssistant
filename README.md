@@ -42,7 +42,6 @@
 │   ├── controller/     # 对外 HTTP / SSE 接口
 │   ├── rag/            # RAG 配置：文档加载、切分、关键词增强、向量库
 │   ├── tools/          # 工具实现与集中注册
-│   └── demo/           # 各类模型接入与 RAG 用法示例
 ├── src/main/resources
 │   ├── application.yml
 │   ├── mcp-servers.json   # MCP 服务（stdio）启动配置
@@ -95,6 +94,22 @@ java -jar target/love-assistant-0.0.1-SNAPSHOT.jar
 cd image-search-mcp-server
 .\mvnw.cmd -DskipTests package
 ```
+
+## 测试
+
+`mvn test` 默认只跑不依赖外部环境的单测，克隆下来即可执行：
+
+| 测试 | 覆盖内容 |
+|---|---|
+| `FileOperationToolTest` | 写入后读回内容一致、覆盖写、文件不存在时的降级返回 |
+| `PDFGenerationToolTest` | PDF 真实落盘、非空、以 `%PDF` 文件头开头、非法文件名降级 |
+| `WebSearchToolTest` | 注入假 HTTP 响应，覆盖请求参数拼装、最多 5 条截断、结果不足 5 条、空结果、调用异常降级 |
+| `TerminalOperationToolTest` | 终端命令执行与非零退出码处理 |
+
+以下测试依赖真实环境（模型 API Key / 外网 / PostgreSQL），已从默认执行中排除，
+需要时把 `pom.xml` 里 surefire 的 `excludes` 对应项注释掉再跑：
+`LoveAssistantApplicationTests`、`LoveAppTest`、`LoveAgentTest`、`LoveAppDocumentLoaderTest`、
+`PgVectorVectorStoreConfigTest`、`ResourceDownloadToolTest`、`WebScrapingToolTest`。
 
 ## 核心实现说明
 

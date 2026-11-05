@@ -13,19 +13,6 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>love-assistant</name>
     <description>恋爱助手 - 基于 Spring AI 的情感咨询与智能体应用</description>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
     <properties>
         <java.version>21</java.version>
     </properties>
@@ -134,11 +121,12 @@
             <type>pom</type>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.itextpdf/font-asian -->
+        <!-- 中文字体（STSongStd-Light / UniGB-UCS2-H）运行时必须可见，否则打包后生成 PDF 会失败 -->
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>font-asian</artifactId>
             <version>9.1.0</version>
-            <scope>test</scope>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>cn.hutool</groupId>
@@ -187,6 +175,26 @@
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                         </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <!--
+                默认只跑离线单测：不需要 API Key、不需要网络、不需要数据库。
+                下面这些测试依赖真实模型密钥 / 外部 HTTP 服务 / PostgreSQL，属于集成测试，
+                本地想跑时把它们从 excludes 里注释掉，再执行 mvn test 即可。
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/LoveAssistantApplicationTests.java</exclude>
+                        <exclude>**/LoveAppTest.java</exclude>
+                        <exclude>**/LoveAgentTest.java</exclude>
+                        <exclude>**/LoveAppDocumentLoaderTest.java</exclude>
+                        <exclude>**/PgVectorVectorStoreConfigTest.java</exclude>
+                        <exclude>**/ResourceDownloadToolTest.java</exclude>
+                        <exclude>**/WebScrapingToolTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>

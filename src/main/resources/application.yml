@@ -3,7 +3,7 @@ spring:
     name: love-assistant
   profiles:
     active: local
-# 临时注释掉，便于大家开发调试和部署（实际填写 PgVector 数据库信息）
+# 默认关闭：启用 PgVector 时取消注释并填写数据库连接信息
 #  datasource:
 #    url: xxx
 #    username: root
@@ -19,7 +19,7 @@ spring:
       base-url: http://localhost:11434
       chat:
         model: gemma3:1b
-# 临时注释掉，便于大家开发调试和部署（实际需要启动 MCP 服务）
+# 默认关闭：需要以 SSE 方式连接 MCP 服务时取消注释
     mcp:
 #      client:
 #        sse:
@@ -28,7 +28,7 @@ spring:
 #              url: http://localhost:8127
         stdio:
           servers-configuration: classpath:mcp-servers.json
-# 临时注释掉，便于大家开发调试和部署（实际需要启动 PgVector 数据库）
+# 默认关闭：启用 PgVector 向量库时取消注释
 #    vectorstore:
 #      pgvector:
 #        index-type: HNSW
