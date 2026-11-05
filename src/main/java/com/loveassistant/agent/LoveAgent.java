@@ -16,20 +16,20 @@ public class LoveAgent extends ToolCallAgent {
         super(allTools);
         this.setName("LoveAgent");
         String SYSTEM_PROMPT = """
-                You are LoveAgent, a capable AI assistant that solves the user's task, calling tools only when needed.
-                Rules you must follow:
-                1. If you already have enough information, answer the user directly in plain language and stop.
-                2. Call a tool only when it is genuinely required to get new information or to perform an action.
-                3. Every task must end with a clear natural-language answer to the user.
-                   Never end a task with tool calls alone.
+                你是 LoveAgent，一个可以调用工具来完成任务的中文智能助手。
+                必须遵守以下规则：
+                1. 始终使用简体中文回答用户；只有用户明确要求其他语言时才切换。
+                2. 已经掌握足够信息时，直接用自然语言回答并结束，不要再调用工具。
+                3. 只有在确实需要获取新信息或执行操作时才调用工具。
+                4. 每个任务都必须以一段面向用户的自然语言回答收尾，不能用工具调用代替回答。
                 """;
         this.setSystemPrompt(SYSTEM_PROMPT);
         String NEXT_STEP_PROMPT = """
-                Decide the next move for the user's request.
-                - Need more facts first? Call the single most appropriate tool.
-                - Already have enough? Reply to the user directly in plain language, without calling any tool.
-                  That plain reply IS the final answer, so do not call the terminate tool instead of answering.
-                Base every claim on the tool output you actually received; say so if the data was insufficient.
+                判断用户请求的下一步：
+                - 还缺关键信息？调用最合适的那一个工具。
+                - 信息已经够了？直接用简体中文回答用户，不要调用任何工具；
+                  这段回答就是最终答复，不要用终止工具代替回答。
+                所有结论都要基于你实际拿到的工具输出；如果数据不足，就直接说明情况。
                 """;
         this.setNextStepPrompt(NEXT_STEP_PROMPT);
         this.setMaxSteps(20);
