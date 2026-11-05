@@ -41,6 +41,9 @@ public abstract class BaseAgent {
     // 最近一次 think 得到的模型回答文本，用于把最终答复交还给调用方
     private String lastAssistantText = "";
 
+    // 本轮是否已经产出自然语言回答（模型不再调用工具的那一步）
+    private boolean answered = false;
+
     // LLM 大模型
     private ChatClient chatClient;
 
@@ -82,6 +85,13 @@ public abstract class BaseAgent {
             if (currentStep >= maxSteps) {
                 state = AgentState.FINISHED;
                 results.add("Terminated: Reached max steps (" + maxSteps + ")");
+            }
+            // 整轮都没有自然语言回答时（例如模型一路调工具后直接终止），补一次不带工具的总结
+            if (!answered) {
+                String finalAnswer = finalizeAnswer();
+                if (StrUtil.isNotBlank(finalAnswer)) {
+                    results.add(finalAnswer);
+                }
             }
             return String.join("\n", results);
         } catch (Exception e) {
@@ -145,6 +155,14 @@ public abstract class BaseAgent {
                     results.add("Terminated: Reached max steps (" + maxSteps + ")");
                     sseEmitter.send("执行结束：达到最大步骤（" + maxSteps + "）");
                 }
+                // 整轮都没有自然语言回答时，补一次不带工具的总结，保证用户一定能看到答复
+                if (!answered) {
+                    String finalAnswer = finalizeAnswer();
+                    if (StrUtil.isNotBlank(finalAnswer)) {
+                        results.add(finalAnswer);
+                        sseEmitter.send(finalAnswer);
+                    }
+                }
                 // 正常完成
                 sseEmitter.complete();
             } catch (Exception e) {
@@ -185,6 +203,18 @@ public abstract class BaseAgent {
      * @return
      */
     public abstract String step();
+
+    /**
+     * 生成最终回答。
+     * <p>
+     * 当整个循环都没有产出自然语言回答时（模型把工具调用当作终点，例如直接调用终止工具），
+     * 由子类实现一次"不带工具"的总结调用，保证调用方一定能拿到答复。
+     *
+     * @return 最终回答；返回 null 表示不需要追加
+     */
+    protected String finalizeAnswer() {
+        return null;
+    }
 
     /**
      * 清理资源

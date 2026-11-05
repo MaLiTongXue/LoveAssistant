@@ -40,14 +40,20 @@ public abstract class ReActAgent extends BaseAgent {
             // 先思考
             boolean shouldAct = think();
             if (!shouldAct) {
-                // 模型选择不再调用工具，说明已经给出最终回答：
-                // 这里必须结束循环并把回答交还，否则回答会被丢掉、循环还会继续空转到最大步数
-                setState(AgentState.FINISHED);
                 String answer = getLastAssistantText();
-                return StrUtil.isBlank(answer) ? "思考完成 - 无需行动" : answer;
+                setState(AgentState.FINISHED);
+                if (StrUtil.isBlank(answer)) {
+                    // 模型既没给回答也没调工具：交给 BaseAgent 的兜底总结处理
+                    return "思考完成 - 无需行动";
+                }
+                setAnswered(true);
+                return answer;
             }
             // 再行动
-            return act();
+            String actionResult = act();
+            String narration = getLastAssistantText();
+            // 模型调用工具时通常会顺带说明自己在做什么，这段旁白也应展示给用户
+            return StrUtil.isBlank(narration) ? actionResult : narration + "\n" + actionResult;
         } catch (Exception e) {
             // 记录异常日志
             log.error("步骤执行失败", e);

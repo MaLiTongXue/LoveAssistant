@@ -59,7 +59,8 @@ public class ToolCallAgent extends ReActAgent {
     @Override
     public boolean think() {
         // 1、校验提示词，拼接用户提示词
-        if (StrUtil.isNotBlank(getNextStepPrompt())) {
+        // 只在第一步追加一次：每步都追加会在上下文里堆出一串重复的用户消息，把模型推向"继续调工具"
+        if (getCurrentStep() <= 1 && StrUtil.isNotBlank(getNextStepPrompt())) {
             UserMessage userMessage = new UserMessage(getNextStepPrompt());
             getMessageList().add(userMessage);
         }
@@ -139,5 +140,33 @@ public class ToolCallAgent extends ReActAgent {
         return toolResponseMessage.getResponses().stream()
                 .map(response -> "已调用工具 " + response.name())
                 .collect(Collectors.joining("、"));
+    }
+
+    /**
+     * 循环结束时还没有自然语言回答（模型把工具调用当终点，或直接终止），
+     * 这里不带任何工具再问一次，强制模型基于已拿到的信息给出结论。
+     */
+    @Override
+    protected String finalizeAnswer() {
+        try {
+            // 上下文里带着工具调用记录，所以这次请求仍然附上工具定义，保证消息序列合法；
+            // 同时明确要求模型直接作答、不要再调用工具。
+            getMessageList().add(new UserMessage(
+                    "请基于目前已经获得的信息，用简洁的中文直接回答用户的问题，不要再调用任何工具。"));
+            ChatResponse response = getChatClient()
+                    .prompt(new Prompt(getMessageList(), this.chatOptions))
+                    .system(getSystemPrompt())
+                    .toolCallbacks(availableTools)
+                    .call()
+                    .chatResponse();
+            AssistantMessage assistantMessage = response.getResult().getOutput();
+            // 即使模型又挑了工具，只要有文本就当作最终回答
+            String answer = assistantMessage.getText();
+            getMessageList().add(assistantMessage);
+            return StrUtil.isBlank(answer) ? null : answer;
+        } catch (Exception e) {
+            log.error(getName() + "生成最终回答失败：" + e.getMessage());
+            return null;
+        }
     }
 }
