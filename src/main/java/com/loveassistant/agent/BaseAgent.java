@@ -38,6 +38,9 @@ public abstract class BaseAgent {
     private int currentStep = 0;
     private int maxSteps = 10;
 
+    // 最近一次 think 得到的模型回答文本，用于把最终答复交还给调用方
+    private String lastAssistantText = "";
+
     // LLM 大模型
     private ChatClient chatClient;
 

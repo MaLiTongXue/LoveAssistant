@@ -81,6 +81,8 @@ public class ToolCallAgent extends ReActAgent {
             List<AssistantMessage.ToolCall> toolCallList = assistantMessage.getToolCalls();
             // 输出提示信息
             String result = assistantMessage.getText();
+            // 记录模型本次输出的文本：不需要调用工具时，它就是最终回答
+            setLastAssistantText(StrUtil.blankToDefault(result, ""));
             log.info(getName() + "的思考：" + result);
             log.info(getName() + "选择了 " + toolCallList.size() + " 个工具来使用");
             String toolCallInfo = toolCallList.stream()
@@ -98,7 +100,9 @@ public class ToolCallAgent extends ReActAgent {
             }
         } catch (Exception e) {
             log.error(getName() + "的思考过程遇到了问题：" + e.getMessage());
-            getMessageList().add(new AssistantMessage("处理时遇到了错误：" + e.getMessage()));
+            String errorText = "处理时遇到了错误：" + e.getMessage();
+            setLastAssistantText(errorText);
+            getMessageList().add(new AssistantMessage(errorText));
             return false;
         }
     }
@@ -129,7 +133,11 @@ public class ToolCallAgent extends ReActAgent {
         String results = toolResponseMessage.getResponses().stream()
                 .map(response -> "工具 " + response.name() + " 返回的结果：" + response.responseData())
                 .collect(Collectors.joining("\n"));
+        // 完整的工具返回值只写日志：直接推给前端会把一大段原始 JSON 当成对话内容显示
         log.info(results);
-        return results;
+        // 返回给调用方（SSE 流）的是简短进度，真正的回答由下一步 think 产出
+        return toolResponseMessage.getResponses().stream()
+                .map(response -> "已调用工具 " + response.name())
+                .collect(Collectors.joining("、"));
     }
 }
